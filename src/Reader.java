@@ -74,6 +74,7 @@ public class Reader {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        index += 1;     // skip the newline character
         return sb.toString();
     }
 
