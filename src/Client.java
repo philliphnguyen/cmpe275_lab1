@@ -6,5 +6,9 @@ public class Client {
         String filePath = "./excerpts";
 
         SingleChronicleQueue queue = SingleChronicleQueueBuilder.binary(filePath).build();
+
+        StoreAppender appender = new StoreAppender(queue);
+        String text = "Happy Wednesday!";
+        appender.writeText(text);
     }
 }
