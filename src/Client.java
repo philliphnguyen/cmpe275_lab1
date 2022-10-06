@@ -6,5 +6,11 @@ public class Client {
         String filePath = "./excerpts";
 
         SingleChronicleQueue queue = SingleChronicleQueueBuilder.binary(filePath).build();
+
+        StoreAppender appender = new StoreAppender(queue);
+        String text = "Test header overwriting for third msg";
+        appender.writeText(text);
+        // appender.close();
+
     }
 }
