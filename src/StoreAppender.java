@@ -1,7 +1,11 @@
 import java.io.Closeable;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -17,7 +21,6 @@ public class StoreAppender implements iExcerptAppender, Closeable{
     long lastPosition;
     private long positionOfHeader = 0;
     private long lastIndex = Long.MIN_VALUE;
-    private int count = 0;
 
     StoreAppender(SingleChronicleQueue queue) {
         this.queue = queue;
@@ -31,17 +34,36 @@ public class StoreAppender implements iExcerptAppender, Closeable{
         iWriteLock.lock();
         try {
             currentFile(path);
-           Files.write(currentFile.toPath(), bytes, StandardOpenOption.APPEND);
+            Files.write(currentFile.toPath(), bytes, StandardOpenOption.APPEND);
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
+            try {
+                RandomAccessFile raf = new RandomAccessFile(currentFile, "rw");
+                int header = lastIndex > 0 ? (int) lastIndex : 0;
+                raf.seek(header);
+                raf.write("1".getBytes(), 0, 1);
+                raf.close();
+                lastIndex = header + bytes.length;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             iWriteLock.unlock();
         }
     }
-    private File currentFile(File path) {
-        if (currentFile == null) {
-            String date = new SimpleDateFormat("yyyy-MM-dd").format(new java.util.Date());
-            currentFile = new File(path, "data-" + date + ".cq4");
+
+    private File currentFile(File path) throws IOException {
+        String date = new SimpleDateFormat("yyyy-MM-dd").format(new java.util.Date());
+        String fileName = "data-" + date + ".cq4";
+        Path currentPath = Paths.get(path + "/" + fileName);
+        if (!Files.exists(currentPath)) {
+            Files.createFile(currentPath);
+            currentFile = currentPath.toFile();
+            System.err.println("Current file is newly created");
+        } else {
+            System.err.println("Current file already exists");
+            currentFile = currentPath.toFile();
+            lastIndex = Files.size(currentPath);
         }
         return currentFile;
     }

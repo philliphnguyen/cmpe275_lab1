@@ -8,7 +8,9 @@ public class Client {
         SingleChronicleQueue queue = SingleChronicleQueueBuilder.binary(filePath).build();
 
         StoreAppender appender = new StoreAppender(queue);
-        String text = "Happy Wednesday!";
+        String text = "Test header overwriting for third msg";
         appender.writeText(text);
+        // appender.close();
+
     }
 }
