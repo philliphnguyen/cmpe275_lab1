@@ -34,17 +34,21 @@ public class StoreTailer {
             }
             raf.seek(index);
 
-            lastReadIndex = index;
-
             // the first bit of the message indicates whether the message is completed, 1 means completed, 0 means incomplete
             byte[] complete = new byte[1];
             raf.read(complete, 0, 1);
+            int completeFlag = Integer.parseInt(new String(complete), 2);
+            if (completeFlag == 0) {
+                return null;
+            }
+
+            lastReadIndex = index;
 
             // the size of the data is stored in the remaining 31 bits of the header
-            byte[] arr = new byte[31];
-            raf.read(arr, 0, 31);
+            byte[] length = new byte[31];
+            raf.read(length, 0, 31);
             index += 32;
-            int excerptLength = (int) Long.parseLong(new String(arr), 2);       // convert 31-bit binary to decimal number
+            int excerptLength = (int) Long.parseLong(new String(length), 2);       // convert 31-bit binary to decimal number
 
             // convert binary data to text
             int n = excerptLength / 8;      // we are going to read 8 bits each iteration
@@ -64,7 +68,9 @@ public class StoreTailer {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        index += 2;     // skip the newline character
+
+        // Note: The newline character is different on different OS
+        index += 1;     // skip the newline character
         return sb.toString();
     }
 

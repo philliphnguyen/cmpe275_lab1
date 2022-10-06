@@ -17,5 +17,7 @@ public class Client {
         System.out.println("Content: " + tailer.readText() + " -> Index: " + tailer.lastReadIndex());
         System.out.println("Content: " + tailer.readText() + " -> Index: " + tailer.lastReadIndex());
         System.out.println("Content: " + tailer.readText() + " -> Index: " + tailer.lastReadIndex());
+        System.out.println("Content: " + tailer.readText() + " -> Index: " + tailer.lastReadIndex());
+        System.out.println("Content: " + tailer.readText() + " -> Index: " + tailer.lastReadIndex());
     }
 }
