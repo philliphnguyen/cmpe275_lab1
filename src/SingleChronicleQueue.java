@@ -1,20 +1,22 @@
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
-import java.util.Collections;
-import java.util.IdentityHashMap;
-import java.util.Set;
+import java.util.*;
 
 public class SingleChronicleQueue implements Closeable {
+    public static final String SUFFIX = ".cq4";
+
     File path;
     private final iWriteLock writeLock;
     private Long timeoutMS; // 10 seconds.
     private final Set<StoreAppender> closers = Collections.newSetFromMap(new IdentityHashMap<>());
+    private final iDirectoryListing directoryListing;
     
     public SingleChronicleQueue(SingleChronicleQueueBuilder builder) {
         //Construction process from builder design pattern
         this.path = builder.path();
         this.writeLock = new TableStoreWriteLock(timeoutMS() * 3 / 2, path);
+        this.directoryListing = new FileSystemDirectoryListing(path, getFileNames());
     }
 
     public long timeoutMS() {
@@ -57,4 +59,25 @@ public class SingleChronicleQueue implements Closeable {
         performClose();
     }
 
+    public List<String> getFileNames() {
+        List<String> fileNames = new ArrayList<String>();
+        String[] files = path.list();
+        Arrays.sort(files);
+
+        for (String fileName: files) {
+            if (fileName.endsWith(SingleChronicleQueue.SUFFIX)) {
+                fileNames.add(fileName);
+            }
+        }
+
+        return fileNames;
+    }
+
+    public int lastCycle() {
+        return directoryListing.maxCycle();
+    }
+
+    public String toFileName(int cycle) {
+        return directoryListing.getList().get(cycle);
+    }
 }
