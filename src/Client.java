@@ -12,5 +12,10 @@ public class Client {
         appender.writeText(text);
         // appender.close();
 
+        StoreTailer tailer = new StoreTailer(queue);
+        System.out.println("Content: " + tailer.readText() + " -> Index: " + tailer.lastReadIndex());
+        System.out.println("Content: " + tailer.readText() + " -> Index: " + tailer.lastReadIndex());
+        System.out.println("Content: " + tailer.readText() + " -> Index: " + tailer.lastReadIndex());
+        System.out.println("Content: " + tailer.readText() + " -> Index: " + tailer.lastReadIndex());
     }
 }
