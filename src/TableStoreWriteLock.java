@@ -70,11 +70,9 @@ public class TableStoreWriteLock implements iWriteLock{
         if (!lock.compareAndSet(PID, UNLOCKED)) {
             long value = lock.get();
             if (value == UNLOCKED)
-            System.err.println("Write lock was already unlocked. For the " +
-                        "lock file:" + path);
+            System.err.println("Write lock was already unlocked. For the path" + path);
             else
-            System.err.println("Write lock was locked by someone else! For the " +
-                        "lock file:" + path + " " +
+            System.err.println("Write lock was locked by someone else! For the path" + path + " " +
                         "by PID: " + getLockedBy(value));
         }
         lockedByThread = null;

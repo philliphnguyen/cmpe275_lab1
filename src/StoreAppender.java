@@ -1,6 +1,5 @@
 import java.io.Closeable;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.file.Files;
@@ -8,22 +7,15 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 
 public class StoreAppender implements iExcerptAppender, Closeable{
-    private final SingleChronicleQueue queue;
     private final iWriteLock iWriteLock;
     private File path;
     private File currentFile = null;
-    SingleChronicleQueueStore store;
     private boolean closed;
-
-    long lastPosition;
-    private long positionOfHeader = 0;
     private long lastIndex = Long.MIN_VALUE;
 
     StoreAppender(SingleChronicleQueue queue) {
-        this.queue = queue;
         this.iWriteLock = queue.writeLock();
         this.path = queue.path;
     }
@@ -87,39 +79,21 @@ public class StoreAppender implements iExcerptAppender, Closeable{
     private String padding(String str, int len) {
         return String.format(String.format("%%%ds", len), str).replaceAll(" ", "0");
     }
-        
-
-    @Override
-    public long lastWrittenIndex() {
-        if (lastIndex != Long.MIN_VALUE)
-            return lastIndex;
-
-        if (lastPosition == Long.MIN_VALUE) {
-            throw new IllegalStateException("nothing has been appended, so there is no last index");
-        }
-
-        try {
-            long index = store.sequenceForPosition(this, lastPosition, true);
-            lastIndex(index);
-            return index;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return lastIndex;
-    }
-
-    void lastIndex(long index) {
-        this.lastIndex = index;
-    }
 
     @Override
     public void close() throws IOException {
+        // System.out.println("Closing appender");
+        if (this.closed) 
+            return;
         try {
-            this.close();
-            this.closed = true;
+            iWriteLock.unlock();
         } catch (Exception e) {
-            throw new IOException(e);
+            System.err.println("Error closing appender");
+        } finally {
+            this.closed = true;
+            System.out.println("Appender closed");
         }
+        
     }
 
     public boolean isClosed() {

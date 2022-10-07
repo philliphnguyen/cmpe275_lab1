@@ -45,12 +45,6 @@ public class SingleChronicleQueue implements Closeable {
                 }
             });
             closers.clear();
-
-            try {
-                this.close();
-            } catch (Exception e) {
-                throw new IOException(e);
-            }
         }
     }
 

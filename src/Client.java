@@ -1,4 +1,3 @@
-import java.io.File;
 import java.io.IOException;
 
 public class Client {
@@ -8,9 +7,9 @@ public class Client {
         SingleChronicleQueue queue = SingleChronicleQueueBuilder.binary(filePath).build();
 
         StoreAppender appender = new StoreAppender(queue);
-        String text = "Test header overwriting for third msg";
+        String text = "test close";
         appender.writeText(text);
-        // appender.close();
+        appender.close();
 
         StoreTailer tailer = new StoreTailer(queue);
         System.out.println("Content: " + tailer.readText() + " -> Index: " + tailer.lastReadIndex());
@@ -19,5 +18,6 @@ public class Client {
         System.out.println("Content: " + tailer.readText() + " -> Index: " + tailer.lastReadIndex());
         System.out.println("Content: " + tailer.readText() + " -> Index: " + tailer.lastReadIndex());
         System.out.println("Content: " + tailer.readText() + " -> Index: " + tailer.lastReadIndex());
+        queue.close();
     }
 }
