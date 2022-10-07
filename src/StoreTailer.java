@@ -10,6 +10,7 @@ public class StoreTailer {
         this.queue = queue;
         this.cycle = 0;
         this.index = 0;
+
     }
 
     public String readText() {
@@ -29,6 +30,7 @@ public class StoreTailer {
                     raf = new RandomAccessFile(filePath, "r");
                 } else {
                     // reached end of queue
+                    raf.close(); //Added this line since the program will eventually crash if it keeps reading null
                     return null;
                 }
             }

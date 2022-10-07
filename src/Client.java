@@ -7,17 +7,24 @@ public class Client {
         SingleChronicleQueue queue = SingleChronicleQueueBuilder.binary(filePath).build();
 
         StoreAppender appender = new StoreAppender(queue);
-        String text = "test close";
+
+        /*String text = "test close";
         appender.writeText(text);
+        appender.close();*/
+
+        for (int i = 0; i < 50; i++) {
+            appender.writeText("Message " + i);
+        }
+
         appender.close();
 
-        StoreTailer tailer = new StoreTailer(queue);
+        /*StoreTailer tailer = new StoreTailer(queue);
         System.out.println("Content: " + tailer.readText() + " -> Index: " + tailer.lastReadIndex());
         System.out.println("Content: " + tailer.readText() + " -> Index: " + tailer.lastReadIndex());
         System.out.println("Content: " + tailer.readText() + " -> Index: " + tailer.lastReadIndex());
         System.out.println("Content: " + tailer.readText() + " -> Index: " + tailer.lastReadIndex());
         System.out.println("Content: " + tailer.readText() + " -> Index: " + tailer.lastReadIndex());
         System.out.println("Content: " + tailer.readText() + " -> Index: " + tailer.lastReadIndex());
-        queue.close();
+        queue.close();*/
     }
 }
