@@ -7,6 +7,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.text.SimpleDateFormat;
+import java.util.concurrent.*;
 
 public class StoreAppender implements iExcerptAppender, Closeable{
     private final iWriteLock iWriteLock;
@@ -62,7 +63,7 @@ public class StoreAppender implements iExcerptAppender, Closeable{
 
     public void writeText(String text) {
         throwExceptionIfClosed();
-        int len = text.length();
+        /*int len = text.length();
         String bs = Integer.toBinaryString(len * 8);    // convert text length to binary
         String first32 = padding(bs, 32);
         StringBuilder sb = new StringBuilder();
@@ -73,7 +74,40 @@ public class StoreAppender implements iExcerptAppender, Closeable{
             sb.append(padding(binary, 8));
         }
         sb.append("\n");
-        writeBytes(sb.toString().getBytes());
+        writeBytes(sb.toString().getBytes());*/
+
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Future future = executor.submit(new Callable() {
+            @Override
+            public Object call() throws Exception {
+                int len = text.length();
+                String bs = Integer.toBinaryString(len * 8);    // convert text length to binary
+                String first32 = padding(bs, 32);
+                StringBuilder sb = new StringBuilder();
+                sb.append(first32);
+                for (int i = 0; i < len; i++) {
+                    char c = text.charAt(i);
+                    String binary = Integer.toBinaryString(c);
+                    sb.append(padding(binary, 8));
+                }
+                sb.append("\n");
+                //Thread.sleep(6000);
+                writeBytes(sb.toString().getBytes());
+
+                return null;
+            }
+        });
+
+        try {
+            future.get(5, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (TimeoutException e) {
+            e.printStackTrace();
+        }
+        executor.shutdown();
     }
 
     private String padding(String str, int len) {

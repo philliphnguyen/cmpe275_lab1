@@ -12,10 +12,9 @@ public class Client {
         appender.writeText(text);
         appender.close();*/
 
-        for (int i = 0; i < 10000; i++) {
-            appender.writeText("Message #" + i);
+        for (int i = 0; i < 50; i++) {
+            appender.writeText("Message " + i);
         }
-
 
         appender.close();
 
