@@ -1,7 +1,7 @@
 import java.util.List;
 
 public interface iDirectoryListing {
-    void refresh();
+    void refresh(boolean force);
 
     int maxCycle();
 
