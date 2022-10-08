@@ -58,9 +58,11 @@ public class SingleChronicleQueue implements Closeable {
         String[] files = path.list();
         Arrays.sort(files);
 
-        for (String fileName: files) {
-            if (fileName.endsWith(SingleChronicleQueue.SUFFIX)) {
-                fileNames.add(fileName);
+        if (files != null) {
+            for (String fileName : files) {
+                if (fileName.endsWith(SingleChronicleQueue.SUFFIX)) {
+                    fileNames.add(fileName);
+                }
             }
         }
 
@@ -72,6 +74,10 @@ public class SingleChronicleQueue implements Closeable {
     }
 
     public String toFileName(int cycle) {
-        return directoryListing.getList().get(cycle);
+        List<String> fileNames = directoryListing.getList();
+        if (fileNames.size() != 0 && cycle < lastCycle() && cycle >= 0) {
+            return fileNames.get(cycle);
+        }
+        return null;
     }
 }

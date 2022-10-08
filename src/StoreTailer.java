@@ -15,7 +15,11 @@ public class StoreTailer {
 
     public String readText() {
         StringBuilder sb = new StringBuilder();
-        String filePath = queue.path + "/" + queue.toFileName(cycle);
+        String fileName = queue.toFileName(cycle);
+        if (fileName == null) {
+            return null;
+        }
+        String filePath = queue.path + "/" + fileName;
         RandomAccessFile raf = null;
 
         try {

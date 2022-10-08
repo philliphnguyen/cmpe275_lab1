@@ -21,9 +21,11 @@ public class FileSystemDirectoryListing implements iDirectoryListing {
 
         fileNames.clear();
 
-        for (String fileName: files) {
-            if (fileName.endsWith(SingleChronicleQueue.SUFFIX)) {
-                fileNames.add(fileName);
+        if (files != null) {
+            for (String fileName : files) {
+                if (fileName.endsWith(SingleChronicleQueue.SUFFIX)) {
+                    fileNames.add(fileName);
+                }
             }
         }
 
