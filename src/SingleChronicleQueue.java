@@ -16,7 +16,7 @@ public class SingleChronicleQueue implements Closeable {
         //Construction process from builder design pattern
         this.path = builder.path();
         this.writeLock = new TableStoreWriteLock(timeoutMS() * 3 / 2, path);
-        this.directoryListing = new FileSystemDirectoryListing(path, getFileNames());
+        this.directoryListing = new TableDirectoryListing(path, getFileNames());
     }
 
     public long timeoutMS() {
