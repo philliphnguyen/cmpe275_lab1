@@ -1,6 +1,6 @@
 import java.io.*;
 
-public class StoreTailer {
+public class StoreTailer implements iExcerptTailer {
     private final SingleChronicleQueue queue;
     private int cycle;
     private long index;
@@ -10,7 +10,7 @@ public class StoreTailer {
         this.queue = queue;
         this.cycle = 0;
         this.index = 0;
-
+        this.lastReadIndex = -1;    // default
     }
 
     public String readText() {
@@ -80,10 +80,12 @@ public class StoreTailer {
         return sb.toString();
     }
 
+    @Override
     public int cycle() {
         return this.cycle;
     }
 
+    @Override
     public long lastReadIndex() {
         return this.lastReadIndex;
     }
